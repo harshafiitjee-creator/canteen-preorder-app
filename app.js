@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('menu-list');
   const noItemsEl = document.getElementById('no-items');
 
-  if (!window.MENU || !Array.isArray(MENU)) {
+  if (typeof MENU === 'undefined' || !Array.isArray(MENU)) {
     noItemsEl.hidden = false;
     noItemsEl.textContent = 'Menu data not found.';
     return;
