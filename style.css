@@ -48,66 +48,113 @@ html,body{
   font-size:0.9rem;
 }
 
+.category-tabs{
+  display:flex;
+  gap:8px;
+  margin:12px 0 16px;
+  padding:4px;
+  border-radius:14px;
+  background:#f8f8f8;
+  border:1px solid var(--card-border);
+}
+.category-tab{
+  flex:1 1 0;
+  border:none;
+  border-radius:10px;
+  background:transparent;
+  color:var(--text);
+  font:inherit;
+  font-weight:700;
+  padding:10px 12px;
+  cursor:pointer;
+  transition:background-color 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+.category-tab.active{
+  background:var(--saffron);
+  color:#111111;
+}
+.category-tab:active{
+  transform:translateY(1px);
+}
+
 /* Menu list */
 #menu-list{
   display:flex;
   flex-direction:column;
   gap:var(--gap);
-  padding-top:12px;
+  padding-top:4px;
   padding-bottom:24px;
 }
 
 /* Item card */
 .item{
   display:flex;
-  align-items:center;
+  align-items:flex-start;
   justify-content:space-between;
   gap:12px;
   padding:12px;
   background:var(--bg);
   border:1px solid var(--card-border);
   border-radius:var(--radius);
-  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+  box-shadow:0 1px 2px rgba(0,0,0,0.03);
 }
 .item-left{
   display:flex;
-  align-items:center;
+  align-items:flex-start;
   gap:12px;
   min-width:0;
+  flex:1;
 }
-.veg-dot{
-  width:12px;
-  height:12px;
-  border-radius:50%;
-  flex:0 0 12px;
-  box-shadow:0 0 0 2px #fff inset;
-}
-.veg-dot.veg{ background:#4CAF50; } /* green for veg */
-.veg-dot.nonveg{ background:#e23b3b; } /* red for non-veg */
 
 .item-info{
   min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
 }
 .item-name{
+  margin:0;
   font-size:1rem;
   font-weight:600;
-  margin:0;
   color:var(--text);
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+  line-height:1.4;
+  overflow-wrap:anywhere;
+  word-break:break-word;
+  white-space:normal;
+  max-width:100%;
 }
 .item-meta{
-  margin-top:4px;
-  color:var(--muted);
-  font-size:0.85rem;
-}
-
-/* Price & actions */
-.item-right{
   display:flex;
   align-items:center;
-  gap:12px;
+  gap:8px;
+}
+.diet-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:52px;
+  height:22px;
+  padding:2px 8px;
+  border-radius:999px;
+  font-size:0.72rem;
+  font-weight:700;
+  letter-spacing:0.02em;
+}
+.diet-badge.veg{
+  background:#eaf7ee;
+  color:#1d7a45;
+}
+.diet-badge.nonveg{
+  background:#fde9e9;
+  color:#b42318;
+}
+
+/* Price */
+.item-right{
+  display:flex;
+  align-items:flex-start;
+  justify-content:flex-end;
+  flex-shrink:0;
 }
 .price{
   font-size:var(--price-size);
@@ -115,18 +162,8 @@ html,body{
   color:var(--text);
   min-width:72px;
   text-align:right;
+  line-height:1.4;
 }
-.btn{
-  background:var(--saffron);
-  color:#111;
-  border:none;
-  padding:8px 12px;
-  border-radius:10px;
-  font-weight:600;
-  cursor:pointer;
-  box-shadow: 0 2px 0 rgba(0,0,0,0.04);
-}
-.btn:active{ transform:translateY(1px); }
 
 /* Empty state */
 .empty{
@@ -139,4 +176,6 @@ html,body{
 @media (max-width:420px){
   .price{ min-width:58px; font-size:1.15rem; }
   .site-header h1{ font-size:1.25rem; }
+  .category-tabs{ gap:6px; }
+  .category-tab{ padding:9px 8px; font-size:0.92rem; }
 }
