@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Campus Canteen</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1>Campus Canteen</h1>
+      <p class="tag">Order ahead • Quick pickup</p>
+    </div>
+  </header>
+
+  <main class="container">
+    <section id="menu-list" aria-label="Available menu items">
+      <!-- Items rendered by app.js -->
+    </section>
+
+    <p id="no-items" class="empty" hidden>No items available right now.</p>
+  </main>
+
+  <!-- Menu data (already added): data/menu.js -->
+  <script src="data/menu.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
