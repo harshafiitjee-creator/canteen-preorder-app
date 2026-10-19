@@ -15,14 +15,17 @@
   </header>
 
   <main class="container">
-    <section id="menu-list" aria-label="Available menu items">
-      <!-- Items rendered by app.js -->
-    </section>
+    <div class="category-tabs" role="tablist" aria-label="Menu categories">
+      <button class="category-tab active" type="button" role="tab" aria-selected="true" data-category="Snacks">Snacks</button>
+      <button class="category-tab" type="button" role="tab" aria-selected="false" data-category="Meals">Meals</button>
+      <button class="category-tab" type="button" role="tab" aria-selected="false" data-category="Beverages">Beverages</button>
+    </div>
+
+    <section id="menu-list" aria-label="Available menu items"></section>
 
     <p id="no-items" class="empty" hidden>No items available right now.</p>
   </main>
 
-  <!-- Menu data (already added): data/menu.js -->
   <script src="data/menu.js"></script>
   <script src="app.js"></script>
 </body>
