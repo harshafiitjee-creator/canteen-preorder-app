@@ -57,7 +57,10 @@
           <span>Your name</span>
           <input id="customer-name" type="text" placeholder="Enter your name" autocomplete="name" />
         </label>
-        <button id="place-order-btn" class="place-order-btn" type="button">Place Order</button>
+        <div class="checkout-action">
+          <button id="place-order-btn" class="place-order-btn" type="button">Place Order</button>
+          <div id="checkout-error" class="checkout-error" role="alert" aria-live="assertive" hidden></div>
+        </div>
       </div>
     </section>
   </main>
