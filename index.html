@@ -15,15 +15,48 @@
   </header>
 
   <main class="container">
-    <div class="category-tabs" role="tablist" aria-label="Menu categories">
-      <button class="category-tab active" type="button" role="tab" aria-selected="true" data-category="Snacks">Snacks</button>
-      <button class="category-tab" type="button" role="tab" aria-selected="false" data-category="Meals">Meals</button>
-      <button class="category-tab" type="button" role="tab" aria-selected="false" data-category="Beverages">Beverages</button>
+    <div class="menu-toolbar" aria-label="Menu and orders tabs">
+      <div class="category-tabs" role="tablist" aria-label="Menu categories">
+        <button class="category-tab active" type="button" role="tab" aria-selected="true" data-category="Snacks">Snacks</button>
+        <button class="category-tab" type="button" role="tab" aria-selected="false" data-category="Meals">Meals</button>
+        <button class="category-tab" type="button" role="tab" aria-selected="false" data-category="Beverages">Beverages</button>
+      </div>
+      <button id="my-orders-tab" class="category-tab orders-tab" type="button" role="tab" aria-selected="false" data-category="My Orders">My Orders</button>
     </div>
 
     <section id="menu-list" aria-label="Available menu items"></section>
-
     <p id="no-items" class="empty" hidden>No items available right now.</p>
+
+    <section id="orders-section" class="orders-section" hidden>
+      <div class="section-header">
+        <h2>My Orders</h2>
+      </div>
+      <div id="orders-list" class="orders-list"></div>
+    </section>
+
+    <section id="cart-section" class="cart-section" hidden>
+      <div class="cart-header">
+        <h2>Your Cart</h2>
+        <span id="cart-count">0 items</span>
+      </div>
+
+      <div id="cart-items" class="cart-items"></div>
+
+      <div class="cart-summary">
+        <span>Total</span>
+        <strong id="cart-total">₹0</strong>
+      </div>
+
+      <div class="checkout-row">
+        <label class="field" for="customer-name">
+          <span>Your name</span>
+          <input id="customer-name" type="text" placeholder="Enter your name" autocomplete="name" />
+        </label>
+        <button id="place-order-btn" class="place-order-btn" type="button">Place Order</button>
+      </div>
+
+      <p id="order-message" class="order-message" role="status" aria-live="polite" hidden></p>
+    </section>
   </main>
 
   <script src="data/menu.js"></script>
