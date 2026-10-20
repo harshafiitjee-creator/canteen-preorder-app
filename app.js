@@ -2,7 +2,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('menu-list');
   const noItemsEl = document.getElementById('no-items');
   const tabs = Array.from(document.querySelectorAll('.category-tab'));
-  const categories = ['Snacks', 'Meals', 'Beverages'];
   const cartSection = document.getElementById('cart-section');
   const cartItemsEl = document.getElementById('cart-items');
   const cartTotalEl = document.getElementById('cart-total');
@@ -10,8 +9,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const customerNameInput = document.getElementById('customer-name');
   const placeOrderBtn = document.getElementById('place-order-btn');
   const orderMessageEl = document.getElementById('order-message');
+  const orderMessageTextEl = document.getElementById('order-message-text');
+  const viewOrdersBtn = document.getElementById('view-orders-btn');
   const ordersSection = document.getElementById('orders-section');
   const ordersListEl = document.getElementById('orders-list');
+  const cartBar = document.getElementById('cart-bar');
+  const cartBarText = document.getElementById('cart-bar-text');
 
   let activeTab = 'Snacks';
   let cart = [];
@@ -26,11 +29,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function showOrderMessage(message, type) {
-    orderMessageEl.textContent = message;
+  function showOrderMessage(message, type, options = {}) {
+    orderMessageTextEl.textContent = message;
     orderMessageEl.hidden = false;
-    orderMessageEl.classList.toggle('error', type === 'error');
-    orderMessageEl.classList.toggle('success', type === 'success');
+    orderMessageEl.classList.remove('error', 'success');
+
+    if (type === 'error') {
+      orderMessageEl.classList.add('error');
+    } else if (type === 'success') {
+      orderMessageEl.classList.add('success');
+    }
+
+    viewOrdersBtn.hidden = !options.showViewOrders;
   }
 
   function formatPrice(amount) {
@@ -41,17 +51,33 @@ document.addEventListener('DOMContentLoaded', () => {
     return cart.reduce((sum, item) => sum + (Number(item.price) * Number(item.qty)), 0);
   }
 
+  function getCartItemCount() {
+    return cart.reduce((sum, item) => sum + Number(item.qty), 0);
+  }
+
+  function updateCartBar() {
+    const itemCount = getCartItemCount();
+    const total = getCartTotal();
+    const hasItems = itemCount > 0;
+
+    cartBar.hidden = !hasItems;
+    cartBarText.textContent = `${itemCount} item${itemCount === 1 ? '' : 's'} · ${formatPrice(total)} — View cart`;
+    document.body.classList.toggle('has-cart-bar', hasItems);
+  }
+
   function renderCart() {
     if (!cart.length) {
       cartSection.hidden = true;
       cartItemsEl.innerHTML = '';
       cartCountEl.textContent = '0 items';
       cartTotalEl.textContent = '₹0';
+      updateCartBar();
       return;
     }
 
     cartSection.hidden = false;
-    cartCountEl.textContent = `${cart.reduce((sum, item) => sum + item.qty, 0)} item${cart.reduce((sum, item) => sum + item.qty, 0) === 1 ? '' : 's'}`;
+    const itemCount = getCartItemCount();
+    cartCountEl.textContent = `${itemCount} item${itemCount === 1 ? '' : 's'}`;
     cartTotalEl.textContent = formatPrice(getCartTotal());
     cartItemsEl.innerHTML = '';
 
@@ -105,6 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
       cartItemsEl.appendChild(row);
     });
+
+    updateCartBar();
   }
 
   function updateCartItem(itemId, delta) {
@@ -148,6 +176,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     renderCart();
     orderMessageEl.hidden = true;
+  }
+
+  function flashAddedButton(button) {
+    const originalText = button.dataset.originalText || 'Add';
+    button.textContent = 'Added ✓';
+    button.classList.add('added');
+    button.disabled = true;
+
+    clearTimeout(button._addedTimeoutId);
+    button._addedTimeoutId = setTimeout(() => {
+      button.textContent = originalText;
+      button.classList.remove('added');
+      button.disabled = false;
+    }, 1000);
   }
 
   function selectTab(category) {
@@ -228,8 +270,12 @@ document.addEventListener('DOMContentLoaded', () => {
       const addButton = document.createElement('button');
       addButton.type = 'button';
       addButton.className = 'add-btn';
+      addButton.dataset.originalText = 'Add';
       addButton.textContent = 'Add';
-      addButton.addEventListener('click', () => addToCart(item.id));
+      addButton.addEventListener('click', () => {
+        addToCart(item.id);
+        flashAddedButton(addButton);
+      });
 
       right.appendChild(price);
       right.appendChild(addButton);
@@ -297,6 +343,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
+  function getNextOrderNumber() {
+    const orders = getSavedOrders();
+    return 1000 + orders.length + 1;
+  }
+
   function placeOrder() {
     if (!cart.length) {
       showOrderMessage('Your cart is empty. Add an item before placing an order.', 'error');
@@ -311,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const order = {
-      id: Date.now(),
+      id: getNextOrderNumber(),
       name,
       items: cart.map((item) => ({
         id: item.id,
@@ -333,7 +384,7 @@ document.addEventListener('DOMContentLoaded', () => {
     customerNameInput.value = '';
     renderCart();
     renderOrders();
-    showOrderMessage(`Order #${order.id} has been placed successfully.`, 'success');
+    showOrderMessage(`Order #${order.id} has been placed successfully.`, 'success', { showViewOrders: true });
     selectTab('Snacks');
   }
 
@@ -351,6 +402,19 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   placeOrderBtn.addEventListener('click', placeOrder);
+  viewOrdersBtn.addEventListener('click', () => {
+    selectTab('My Orders');
+  });
+
+  cartBar.addEventListener('click', () => {
+    if (activeTab === 'My Orders') {
+      selectTab('Snacks');
+    }
+
+    requestAnimationFrame(() => {
+      cartSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  });
 
   selectTab('Snacks');
   renderCart();

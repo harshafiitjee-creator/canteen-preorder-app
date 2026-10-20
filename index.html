@@ -15,6 +15,11 @@
   </header>
 
   <main class="container">
+    <div id="order-message" class="order-message" role="status" aria-live="polite" hidden>
+      <span id="order-message-text" class="order-message-text"></span>
+      <button id="view-orders-btn" class="view-orders-btn" type="button" hidden>View My Orders</button>
+    </div>
+
     <div class="menu-toolbar" aria-label="Menu and orders tabs">
       <div class="category-tabs" role="tablist" aria-label="Menu categories">
         <button class="category-tab active" type="button" role="tab" aria-selected="true" data-category="Snacks">Snacks</button>
@@ -54,10 +59,12 @@
         </label>
         <button id="place-order-btn" class="place-order-btn" type="button">Place Order</button>
       </div>
-
-      <p id="order-message" class="order-message" role="status" aria-live="polite" hidden></p>
     </section>
   </main>
+
+  <button id="cart-bar" class="cart-bar" type="button" hidden>
+    <span id="cart-bar-text"></span>
+  </button>
 
   <script src="data/menu.js"></script>
   <script src="app.js"></script>
