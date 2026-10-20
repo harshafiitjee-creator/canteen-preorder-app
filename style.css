@@ -195,7 +195,9 @@ main.container{
 .qty-btn,
 .place-order-btn,
 .view-orders-btn,
-.cart-bar{
+.cart-bar,
+.pickup-slot-btn,
+.test-fill-slot-btn{
   border:none;
   border-radius:10px;
   cursor:pointer;
@@ -203,7 +205,8 @@ main.container{
 }
 .add-btn,
 .place-order-btn,
-.view-orders-btn{
+.view-orders-btn,
+.test-fill-slot-btn{
   background:var(--saffron);
   color:#111111;
   font-weight:700;
@@ -225,7 +228,8 @@ main.container{
 .place-order-btn:active,
 .qty-btn:active,
 .view-orders-btn:active,
-.cart-bar:active{
+.cart-bar:active,
+.pickup-slot-btn:active{
   transform:translateY(1px);
 }
 
@@ -304,6 +308,64 @@ main.container{
   padding-top:12px;
   border-top:1px solid #f3f3f3;
   font-size:1.05rem;
+}
+.pickup-section{
+  margin-top:16px;
+}
+.pickup-header{
+  font-weight:700;
+  margin-bottom:10px;
+}
+.pickup-slot-buttons{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+}
+.pickup-slot-btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  min-height:42px;
+  padding:8px 12px;
+  background:#fff;
+  border:1px solid var(--card-border);
+  color:var(--text);
+  font-weight:700;
+}
+.pickup-slot-btn.selected{
+  background:var(--light-saffron);
+  border-color:var(--saffron);
+}
+.pickup-slot-btn.full{
+  background:#f3f4f6;
+  border-color:#e5e7eb;
+  color:#6b7280;
+  cursor:not-allowed;
+}
+.pickup-slot-time{
+  display:inline-block;
+}
+.pickup-slot-status{
+  display:inline-block;
+  font-size:0.68rem;
+  color:var(--saffron);
+}
+.pickup-slot-status.full{
+  color:#6b7280;
+}
+.pickup-slot-empty{
+  color:var(--muted);
+  font-size:0.95rem;
+  padding:8px 0;
+}
+.test-fill-slot-btn{
+  margin-top:10px;
+  padding:8px 10px;
+  font-size:0.75rem;
+  border-radius:8px;
+  background:var(--light-saffron);
+  color:#7a4f00;
 }
 .checkout-row{
   margin-top:16px;
@@ -486,3 +548,4 @@ main.container{
   .category-tab{ padding:9px 8px; font-size:0.92rem; }
   .order-message{ padding:10px 12px; }
 }
+

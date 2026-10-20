@@ -16,9 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const cartBar = document.getElementById('cart-bar');
   const cartBarText = document.getElementById('cart-bar-text');
   const checkoutErrorEl = document.getElementById('checkout-error');
+  const pickupSlotButtonsEl = document.getElementById('pickup-slot-buttons');
+  const testFillSlotBtn = document.getElementById('test-fill-slot-btn');
 
   let activeTab = 'Snacks';
   let cart = [];
+  let selectedPickupSlot = null;
 
   function getSavedOrders() {
     try {
@@ -28,6 +31,125 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (error) {
       return [];
     }
+  }
+
+  function getCurrentTimeOverride() {
+    const params = new URLSearchParams(window.location.search);
+    const value = params.get('time');
+    return typeof value === 'string' && /^\d{2}:\d{2}$/.test(value) ? value : null;
+  }
+
+  function toMinutes(timeString) {
+    const [hours, minutes] = String(timeString).split(':').map(Number);
+    return (Number(hours) || 0) * 60 + (Number(minutes) || 0);
+  }
+
+  function getCurrentTimeString() {
+    const override = getCurrentTimeOverride();
+    if (override) {
+      return override;
+    }
+
+    const now = new Date();
+    return now.toLocaleTimeString('en-GB', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+  }
+
+  function getPickupSlotOptions() {
+    const slots = [];
+    for (let totalMinutes = 12 * 60; totalMinutes <= 13 * 60 + 45; totalMinutes += 15) {
+      const hours = String(Math.floor(totalMinutes / 60)).padStart(2, '0');
+      const minutes = String(totalMinutes % 60).padStart(2, '0');
+      slots.push(`${hours}:${minutes}`);
+    }
+    return slots;
+  }
+
+  function getPickupSlotCount(slot) {
+    return getSavedOrders().filter((order) => {
+      return order && typeof order.pickupSlot === 'string' && order.pickupSlot === slot;
+    }).length;
+  }
+
+  function renderPickupSlots() {
+    pickupSlotButtonsEl.innerHTML = '';
+
+    const currentMinutes = toMinutes(getCurrentTimeString());
+    const availableSlots = getPickupSlotOptions().filter((slot) => toMinutes(slot) > currentMinutes);
+
+    if (!availableSlots.length) {
+      const empty = document.createElement('div');
+      empty.className = 'pickup-slot-empty';
+      empty.textContent = 'No more pickup slots today.';
+      pickupSlotButtonsEl.appendChild(empty);
+      selectedPickupSlot = null;
+      return;
+    }
+
+    if (selectedPickupSlot && !availableSlots.includes(selectedPickupSlot)) {
+      selectedPickupSlot = null;
+    }
+
+    availableSlots.forEach((slot) => {
+      const count = getPickupSlotCount(slot);
+      const isFull = count >= 20;
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'pickup-slot-btn';
+
+      if (isFull) {
+        button.classList.add('full');
+        button.disabled = true;
+      } else if (selectedPickupSlot === slot) {
+        button.classList.add('selected');
+      }
+
+      const slotText = document.createElement('span');
+      slotText.className = 'pickup-slot-time';
+      slotText.textContent = slot;
+      button.appendChild(slotText);
+
+      if (isFull) {
+        const status = document.createElement('span');
+        status.className = 'pickup-slot-status full';
+        status.textContent = 'Full';
+        button.appendChild(status);
+      } else if (selectedPickupSlot === slot) {
+        const status = document.createElement('span');
+        status.className = 'pickup-slot-status';
+        status.textContent = 'Selected';
+        button.appendChild(status);
+      }
+
+      if (!isFull) {
+        button.addEventListener('click', () => {
+          selectedPickupSlot = slot;
+          renderPickupSlots();
+        });
+      }
+
+      pickupSlotButtonsEl.appendChild(button);
+    });
+  }
+
+  function fill12ThirtySlotForTest() {
+    const orders = getSavedOrders();
+    const dummyOrders = Array.from({ length: 20 }, (_, index) => ({
+      id: `test-${Date.now()}-${index}`,
+      name: `Test Student ${index + 1}`,
+      items: [{ id: `test-item-${index}`, name: 'Test Item', qty: 1, price: 0 }],
+      total: 0,
+      pickupSlot: '12:30',
+      status: 'Received',
+      createdAt: new Date().toISOString(),
+    }));
+
+    localStorage.setItem('orders', JSON.stringify([...orders, ...dummyOrders]));
+    renderPickupSlots();
+    renderOrders();
   }
 
   function showOrderMessage(message, type, options = {}) {
@@ -330,6 +452,9 @@ document.addEventListener('DOMContentLoaded', () => {
       const customer = document.createElement('p');
       customer.textContent = `Name: ${order.name}`;
 
+      const pickup = document.createElement('p');
+      pickup.textContent = `Pickup: ${order.pickupSlot || 'Not selected'}`;
+
       const itemList = document.createElement('ul');
       itemList.className = 'order-items';
       order.items.forEach((item) => {
@@ -349,6 +474,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
       card.appendChild(header);
       card.appendChild(customer);
+      card.appendChild(pickup);
       card.appendChild(itemList);
       card.appendChild(total);
       card.appendChild(date);
@@ -363,18 +489,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function placeOrder() {
     if (!cart.length) {
-      showOrderMessage('Your cart is empty. Add an item before placing an order.', 'error');
+      orderMessageEl.hidden = true;
       showCheckoutError('Your cart is empty. Add an item before placing an order.');
       return;
     }
 
     const name = customerNameInput.value.trim();
     if (!name) {
-      showOrderMessage('Please enter your name before placing the order.', 'error');
+      orderMessageEl.hidden = true;
       showCheckoutError('Please enter your name before placing the order.');
       customerNameInput.focus();
       return;
     }
+
+    if (!selectedPickupSlot) {
+      orderMessageEl.hidden = true;
+      showCheckoutError('Please choose a pickup time');
+      return;
+    }
+
+    const chosenPickupSlot = selectedPickupSlot;
+    selectedPickupSlot = null;
 
     const order = {
       id: getNextOrderNumber(),
@@ -386,7 +521,7 @@ document.addEventListener('DOMContentLoaded', () => {
         price: item.price,
       })),
       total: getCartTotal(),
-      pickupSlot: null,
+      pickupSlot: chosenPickupSlot,
       status: 'Received',
       createdAt: new Date().toISOString(),
     };
@@ -399,9 +534,10 @@ document.addEventListener('DOMContentLoaded', () => {
     customerNameInput.value = '';
     renderCart();
     renderOrders();
+    renderPickupSlots();
     showCheckoutError('');
     selectTab('Snacks');
-    showOrderMessage(`Order #${order.id} has been placed successfully.`, 'success', { showViewOrders: true });
+    showOrderMessage(`Order #${order.id} has been placed successfully for pickup at ${chosenPickupSlot}.`, 'success', { showViewOrders: true });
   }
 
   if (typeof MENU === 'undefined' || !Array.isArray(MENU)) {
@@ -432,7 +568,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
+  if (new URLSearchParams(window.location.search).get('test') === '1') {
+    testFillSlotBtn.hidden = false;
+    testFillSlotBtn.addEventListener('click', fill12ThirtySlotForTest);
+  }
+
   selectTab('Snacks');
+  renderPickupSlots();
   renderCart();
   renderOrders();
 });
+
