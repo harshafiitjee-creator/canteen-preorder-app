@@ -68,10 +68,29 @@ document.addEventListener('DOMContentLoaded', () => {
     return slots;
   }
 
+  const SLOT_CAPACITY = 20;
+
+  function getLocalDateKey(date) {
+    const d = new Date(date);
+    if (Number.isNaN(d.getTime())) {
+      return '';
+    }
+    return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+  }
+
+  // AL-54: count only today's orders (not cancelled) so capacity resets every day
   function getPickupSlotCount(slot) {
+    const todayKey = getLocalDateKey(new Date());
     return getSavedOrders().filter((order) => {
-      return order && typeof order.pickupSlot === 'string' && order.pickupSlot === slot;
+      return order
+        && order.pickupSlot === slot
+        && order.status !== 'Cancelled'
+        && getLocalDateKey(order.createdAt) === todayKey;
     }).length;
+  }
+
+  function isSlotFull(slot) {
+    return getPickupSlotCount(slot) >= SLOT_CAPACITY;
   }
 
   function renderPickupSlots() {
@@ -89,7 +108,8 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    if (selectedPickupSlot && !availableSlots.includes(selectedPickupSlot)) {
+    // AL-54: drop the selection if that slot has passed or has become full
+    if (selectedPickupSlot && (!availableSlots.includes(selectedPickupSlot) || isSlotFull(selectedPickupSlot))) {
       selectedPickupSlot = null;
     }
 
@@ -505,6 +525,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!selectedPickupSlot) {
       orderMessageEl.hidden = true;
       showCheckoutError('Please choose a pickup time');
+      return;
+    }
+
+    // AL-54: re-check capacity at the moment of ordering, not just when the buttons were drawn
+    if (isSlotFull(selectedPickupSlot)) {
+      selectedPickupSlot = null;
+      renderPickupSlots();
+      orderMessageEl.hidden = true;
+      showCheckoutError('Sorry, that pickup time just became full. Please choose another time.');
       return;
     }
 
