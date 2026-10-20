@@ -15,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const ordersListEl = document.getElementById('orders-list');
   const cartBar = document.getElementById('cart-bar');
   const cartBarText = document.getElementById('cart-bar-text');
+  const checkoutErrorEl = document.getElementById('checkout-error');
 
   let activeTab = 'Snacks';
   let cart = [];
@@ -41,6 +42,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     viewOrdersBtn.hidden = !options.showViewOrders;
+    orderMessageEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function showCheckoutError(message) {
+    if (!message) {
+      checkoutErrorEl.textContent = '';
+      checkoutErrorEl.hidden = true;
+      return;
+    }
+
+    checkoutErrorEl.textContent = message;
+    checkoutErrorEl.hidden = false;
   }
 
   function formatPrice(amount) {
@@ -351,12 +364,14 @@ document.addEventListener('DOMContentLoaded', () => {
   function placeOrder() {
     if (!cart.length) {
       showOrderMessage('Your cart is empty. Add an item before placing an order.', 'error');
+      showCheckoutError('Your cart is empty. Add an item before placing an order.');
       return;
     }
 
     const name = customerNameInput.value.trim();
     if (!name) {
       showOrderMessage('Please enter your name before placing the order.', 'error');
+      showCheckoutError('Please enter your name before placing the order.');
       customerNameInput.focus();
       return;
     }
@@ -384,8 +399,9 @@ document.addEventListener('DOMContentLoaded', () => {
     customerNameInput.value = '';
     renderCart();
     renderOrders();
-    showOrderMessage(`Order #${order.id} has been placed successfully.`, 'success', { showViewOrders: true });
+    showCheckoutError('');
     selectTab('Snacks');
+    showOrderMessage(`Order #${order.id} has been placed successfully.`, 'success', { showViewOrders: true });
   }
 
   if (typeof MENU === 'undefined' || !Array.isArray(MENU)) {
