@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>Kitchen View – Campus Canteen</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="kitchen.css" />
+</head>
+<body class="kitchen">
+  <header class="site-header">
+    <div class="container kitchen-header">
+      <div>
+        <h1>Kitchen View</h1>
+        <p class="tag">Campus Canteen · staff only</p>
+      </div>
+      <button id="lock-btn" class="kitchen-btn secondary" type="button" hidden>Lock</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- AL-9: manager PIN gate. Demo only — a real app needs proper staff login on a server. -->
+    <section id="pin-section" class="pin-card" aria-labelledby="pin-title">
+      <h2 id="pin-title">Manager sign-in</h2>
+      <p class="muted">Enter the manager PIN to see today's orders.</p>
+      <form id="pin-form" autocomplete="off">
+        <label class="field" for="pin-input">
+          <span>PIN</span>
+          <input id="pin-input" type="password" inputmode="numeric" maxlength="8" placeholder="••••" />
+        </label>
+        <button class="kitchen-btn" type="submit">Open kitchen view</button>
+      </form>
+      <p id="pin-error" class="checkout-error" role="alert" hidden>Wrong PIN. The kitchen view is for canteen staff only.</p>
+    </section>
+
+    <section id="kitchen-section" hidden>
+      <div class="kitchen-toolbar">
+        <p id="kitchen-summary" class="kitchen-summary"></p>
+        <button id="refresh-btn" class="kitchen-btn secondary" type="button">Refresh</button>
+      </div>
+      <div id="kitchen-list" class="kitchen-list" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <script src="kitchen.js"></script>
+</body>
+</html>

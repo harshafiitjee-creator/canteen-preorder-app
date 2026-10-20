@@ -1,0 +1,111 @@
+/* AL-9: Kitchen view — large text, readable from the counter */
+body.kitchen{
+  background:#fafafa;
+}
+.kitchen-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+.kitchen-btn{
+  border:none;
+  border-radius:10px;
+  background:var(--saffron);
+  color:#111111;
+  font-weight:700;
+  padding:12px 18px;
+  cursor:pointer;
+}
+.kitchen-btn.secondary{
+  background:#ffffff;
+  border:1px solid #dddddd;
+}
+.pin-card{
+  max-width:380px;
+  margin:24px auto;
+  background:#ffffff;
+  border:1px solid var(--card-border);
+  border-radius:16px;
+  padding:20px;
+}
+.pin-card h2{
+  margin:0 0 4px;
+}
+.pin-card form{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  margin-top:12px;
+}
+.muted{
+  color:var(--muted);
+  margin:0;
+}
+.kitchen-toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:8px 0 16px;
+}
+.kitchen-summary{
+  margin:0;
+  font-weight:600;
+  color:var(--muted);
+}
+.kitchen-list{
+  display:flex;
+  flex-direction:column;
+  gap:20px;
+}
+.slot-heading{
+  margin:0 0 10px;
+  padding:8px 12px;
+  border-radius:10px;
+  background:var(--light-saffron);
+  font-size:1.5rem;
+}
+.slot-group{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.kitchen-order{
+  background:#ffffff;
+  border:1px solid var(--card-border);
+  border-radius:14px;
+  padding:14px 16px;
+}
+.kitchen-order-top{
+  display:flex;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:8px 12px;
+}
+.kitchen-order-number{
+  font-size:1.4rem;
+  font-weight:800;
+}
+.kitchen-order-name{
+  font-size:1.25rem;
+  font-weight:600;
+  flex:1 1 auto;
+  overflow-wrap:anywhere;
+}
+.kitchen-items{
+  margin:10px 0 6px;
+  padding-left:0;
+  list-style:none;
+  font-size:1.3rem;
+  line-height:1.5;
+}
+.kitchen-items strong{
+  display:inline-block;
+  min-width:2.5em;
+}
+.kitchen-order-total{
+  margin:0;
+  color:var(--muted);
+  font-size:1rem;
+}
